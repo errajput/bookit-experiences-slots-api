@@ -16,13 +16,10 @@ app.use(cors());
 app.use(express.json());
 
 //  ROUTES
-import experiencesRoutes from "./routes/experience";
-import bookingsRoutes from "./routes/booking";
-import promoRoutes from "./routes/promo";
 
-app.use("/api/experiences", experiencesRoutes);
-app.use("/api/bookings", bookingsRoutes);
-app.use("/promo", promoRoutes);
+import mainRoutes from "./routes/mainRoutes";
+
+app.use("/", mainRoutes);
 
 // BASE ROUTE
 app.get("/", (req, res) => {
