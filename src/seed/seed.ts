@@ -1,51 +1,73 @@
 import mongoose from "mongoose";
-import dotenv from "dotenv";
 import Experience from "../models/Experience";
 import Slot from "../models/Slot";
-
-dotenv.config();
+import Promo from "../models/Promo";
 
 const MONGO_URI = process.env.MONGO_URI || "";
+const DB_NAME = process.env.DB_NAME || "";
+
+const seedExperiencesData = [
+  {
+    title: "Kayaking",
+    description: "Curated small-group kayaking experience",
+    location: "Udupi, Karnataka",
+    price: 999,
+    image: "https://images.unsplash.com/photo-1480480565647-1c4385c7c0bf",
+  },
+  {
+    title: "Nandi Hills Sunrise",
+    description: "Sunrise trek",
+    location: "Bangalore",
+    price: 899,
+    image: "https://images.unsplash.com/photo-1577174696285-05315444c73f",
+  },
+];
+
+const seedSlotsData = [
+  [
+    { date: "2025-10-30", time: "07:00", capacity: 5 },
+    { date: "2025-10-30", time: "09:00", capacity: 5 },
+    { date: "2025-10-30", time: "11:00", capacity: 5 },
+    { date: "2025-10-30", time: "13:00", capacity: 5 },
+    { date: "2025-10-31", time: "07:00", capacity: 5 },
+    { date: "2025-10-31", time: "09:00", capacity: 5 },
+  ],
+  [
+    { date: "2025-10-30", time: "07:00", capacity: 5 },
+    { date: "2025-10-30", time: "09:00", capacity: 5 },
+    { date: "2025-10-31", time: "07:00", capacity: 5 },
+    { date: "2025-10-31", time: "09:00", capacity: 5 },
+    { date: "2025-10-31", time: "11:00", capacity: 5 },
+    { date: "2025-10-31", time: "13:00", capacity: 5 },
+  ],
+];
+
+const seedPromoData = [
+  { code: "SAVE10", discount: 10 },
+  { code: "SAVE100", discount: 100 },
+];
 
 async function seed() {
   if (!MONGO_URI) throw new Error("MONGO_URI not set");
-  await mongoose.connect(MONGO_URI);
+  await mongoose.connect(MONGO_URI, { dbName: DB_NAME });
   console.log("Connected");
 
   await Experience.deleteMany({});
   await Slot.deleteMany({});
+  await Promo.deleteMany({});
 
-  const experiences = await Experience.create([
-    {
-      title: "Kayaking",
-      slug: "kayaking",
-      description: "Curated small-group kayaking experience",
-      location: "Udupi, Karnataka",
-      price: 999,
-      images: [
-        "https://images.unsplash.com/photo-1",
-        "https://images.unsplash.com/photo-2",
-      ],
-    },
-    {
-      title: "Nandi Hills Sunrise",
-      slug: "nandi-hills",
-      description: "Sunrise trek",
-      location: "Bangalore",
-      price: 899,
-      images: [],
-    },
-  ]);
+  const experiences = await Experience.create(seedExperiencesData);
 
-  const [kayak] = experiences;
+  for (let i = 0; i < experiences.length; i++) {
+    const experience = experiences[i];
+    const slotData = seedSlotsData[i].map((s) => ({
+      ...s,
+      experience: experience.id,
+    }));
+    await Slot.create(slotData);
+  }
 
-  const slots = [
-    { experience: kayak._id, date: "2025-10-22", time: "09:00", capacity: 8 },
-    { experience: kayak._id, date: "2025-10-22", time: "07:00", capacity: 6 },
-    { experience: kayak._id, date: "2025-10-23", time: "09:00", capacity: 8 },
-  ];
-
-  await Slot.create(slots);
+  await Promo.create(seedPromoData);
 
   console.log("Seed complete");
   process.exit(0);

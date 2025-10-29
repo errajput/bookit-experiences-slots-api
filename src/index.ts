@@ -1,15 +1,12 @@
 import express from "express";
 import cors from "cors";
 import mongoose from "mongoose";
-import dotenv from "dotenv";
-
-// Load environment variables
-dotenv.config();
 
 // CONFIG
 const app = express();
 const PORT = process.env.PORT || 5000;
 const MONGO_URI = process.env.MONGO_URI || "";
+const DB_NAME = process.env.DB_NAME || "";
 
 //  MIDDLEWARE
 app.use(cors());
@@ -34,7 +31,7 @@ async function startServer() {
   }
 
   try {
-    await mongoose.connect(MONGO_URI);
+    await mongoose.connect(MONGO_URI, { dbName: DB_NAME });
     console.log(" MongoDB connected");
 
     app.listen(PORT, () => {

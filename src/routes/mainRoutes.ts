@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import Experience from "../models/Experience";
 import Slot from "../models/Slot";
 import Booking from "../models/Booking";
+import Promo from "../models/Promo";
 
 const router = Router();
 
@@ -10,35 +11,21 @@ const router = Router();
 /*                              PROMO VALIDATION                            */
 /* -------------------------------------------------------------------------- */
 
-const promos: Record<string, { type: "percent" | "flat"; value: number }> = {
-  SAVE10: { type: "percent", value: 10 },
-  FLAT100: { type: "flat", value: 100 },
-};
-
 // POST /promo/validate
 router.post("/promo/validate", async (req: Request, res: Response) => {
   try {
-    const { code, amount } = req.body as { code: string; amount: number };
+    const { code } = req.body as { code: string };
 
     if (!code) return res.status(400).json({ error: "Promo code required" });
 
-    const promo = promos[code.toUpperCase()];
+    const promo = await Promo.findOne({ code: code.toUpperCase() });
     if (!promo)
       return res.json({ valid: false, message: "Invalid promo code" });
-
-    let discount =
-      promo.type === "percent"
-        ? Math.round((amount * promo.value) / 100)
-        : promo.value;
-
-    const newAmount = Math.max(0, amount - discount);
 
     res.json({
       valid: true,
       code: code.toUpperCase(),
-      type: promo.type,
-      discount,
-      newAmount,
+      discount: promo.discount,
     });
   } catch (err) {
     console.error("Promo validation failed:", err);
@@ -117,6 +104,8 @@ router.post("/api/bookings", async (req: Request, res: Response) => {
       session.endSession();
       return res.status(409).json({ error: "Slot is full or does not exist" });
     }
+
+    // TODO: Update Promo usedCount
 
     // Create booking
     const booking = await Booking.create(

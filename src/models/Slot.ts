@@ -20,6 +20,4 @@ const SlotSchema: Schema = new Schema({
   bookedCount: { type: Number, default: 0 },
 });
 
-SlotSchema.index({ experience: 1, date: 1, time: 1 }, { unique: true });
-
 export default mongoose.model<ISlot>("Slot", SlotSchema);

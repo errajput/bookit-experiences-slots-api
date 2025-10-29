@@ -1,1 +1,1 @@
-"# bookit-experiences-slots-api" 
+# bookit-experiences-slots-api
