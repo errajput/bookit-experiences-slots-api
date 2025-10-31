@@ -16,7 +16,7 @@ app.use(express.json());
 
 import mainRoutes from "./routes/mainRoutes";
 
-app.use("/", mainRoutes);
+app.use("/api", mainRoutes);
 
 // BASE ROUTE
 app.get("/", (req, res) => {

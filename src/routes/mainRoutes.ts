@@ -38,7 +38,7 @@ router.post("/promo/validate", async (req: Request, res: Response) => {
 /* -------------------------------------------------------------------------- */
 
 // GET /api/experiences - list (supports ?q= search)
-router.get("/api/experiences", async (req: Request, res: Response) => {
+router.get("/experiences", async (req: Request, res: Response) => {
   try {
     const q = req.query.q as string | undefined;
     const filter = q ? { title: new RegExp(q, "i") } : {};
@@ -51,7 +51,7 @@ router.get("/api/experiences", async (req: Request, res: Response) => {
 });
 
 // GET /api/experiences/:id - single experience with slots
-router.get("/api/experiences/:id", async (req: Request, res: Response) => {
+router.get("/experiences/:id", async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const exp = await Experience.findById(id).lean();
@@ -70,7 +70,7 @@ router.get("/api/experiences/:id", async (req: Request, res: Response) => {
 /* -------------------------------------------------------------------------- */
 
 // POST /api/bookings - create new booking
-router.post("/api/bookings", async (req: Request, res: Response) => {
+router.post("/bookings", async (req: Request, res: Response) => {
   const session = await mongoose.startSession();
   session.startTransaction();
 
